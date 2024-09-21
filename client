@@ -1,0 +1,252 @@
+{
+    "log": {
+        "disabled": false,
+        "level": "error",
+        "timestamp": true
+    },
+    "dns": {
+        "servers": [
+            {
+                "tag": "block-dns",
+                "address": "rcode://name_error"
+            },
+            {
+                "tag": "cfg-Ali-dns",
+                "address": "https://223.5.5.5/dns-query?",
+                "address_strategy": "ipv4_only",
+                "strategy": "ipv4_only",
+                "detour": "direct-out"
+            },
+            {
+                "tag": "cfg-google-dns",
+                "address": "https://dns.google/dns-query",
+                "address_resolver": "cfg-Ali-dns",
+                "address_strategy": "ipv4_only",
+                "strategy": "ipv4_only",
+                "detour": "select-out",
+                "client_subnet": "1.0.1.0"
+            }
+        ],
+        "rules": [
+            {
+                "ip_version": 4,
+                "outbound": "any",
+                "server": "cfg-Ali-dns"
+            },
+            {
+                "clash_mode": "direct",
+                "server": "cfg-Ali-dns"
+            },
+            {
+                "clash_mode": "global",
+                "server": "cfg-google-dns"
+            },
+            {
+                "rule_set": [
+                    "cfg-cnsite-rule"
+                ],
+                "server": "cfg-Ali-dns"
+            }
+        ],
+        "strategy": "ipv4_only",
+        "disable_cache": true,
+        "disable_expire": false,
+        "independent_cache": false,
+        "final": "cfg-google-dns"
+    },
+    "inbounds": [
+        {
+            "type": "mixed",
+            "tag": "mixed-in",
+            "listen": "127.0.0.1",
+            "listen_port": 18080,
+            "sniff": true,
+            "sniff_override_destination": false,
+            "domain_strategy": "ipv4_only",
+            "set_system_proxy": false
+        },
+        {
+            "type": "tun",
+            "tag": "tun-in",
+            "inet4_address": "172.19.0.1/30",
+            "mtu": 9000,
+            "auto_route": true,
+            "strict_route": true,
+            "stack": "system",
+            "sniff": true,
+            "sniff_override_destination": false,
+            "platform": {
+                "http_proxy": {
+                    "enabled": true,
+                    "server": "127.0.0.1",
+                    "server_port": 18080
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "type": "direct",
+            "tag": "direct-out",
+            "routing_mark": 100
+        },
+        {
+            "type": "block",
+            "tag": "block-out"
+        },
+        {
+            "type": "dns",
+            "tag": "dns-out"
+        },
+        {
+            "type": "vless",
+            "tag": "cfg-vless-out",
+            "routing_mark": 100,
+            "server": "你的域名",
+            "server_port": 10000, // 端口
+            "uuid": "服务端对应的uuid",
+            "flow": "xtls-rprx-vision",
+            "packet_encoding": "xudp",
+            "tls": {
+                "enabled": true,
+                "insecure": false
+            },
+            "domain_strategy": "ipv4_only"
+        },
+        {
+            "type": "trojan",
+            "tag": "cfg-trojan-out",
+            "routing_mark": 100,
+            "server": "你的域名",
+            "server_port": 20000, // 端口
+            "password": "服务端对应的密码",
+            "tls": {
+                "enabled": true,
+                "insecure": false
+            },
+            "domain_strategy": "ipv4_only"
+        },
+        {
+            "type": "hysteria2",
+            "tag": "cfg-hysteria2-out",
+            "routing_mark": 100,
+            "server": "服务端 ip",
+            "server_port": 30000, //端口
+            "password": "服务端对应的密码",
+            "tls": {
+                "enabled": true,
+                "server_name": "你的域名",
+                "insecure": false
+            },
+            "domain_strategy": "prefer_ipv4"
+        },
+        {
+            "type": "tuic",
+            "tag": "cfg-tuic-out",
+            "routing_mark": 100,
+            "server": "服务端 ip",
+            "server_port": 40000, //端口
+            "password": "服务端对应密码",
+            "uuid": "服务端对应uuid",
+            "congestion_control": "cubic",
+            "heartbeat": "10s",
+            "tls": {
+                "enabled": true,
+                "server_name": "你的域名",
+                "insecure": false,
+                "alpn": [
+                    "h3"
+                ]
+            },
+            "domain_strategy": "ipv4_only"
+        },
+        {
+            "type": "selector",
+            "tag": "select-out",
+            "outbounds": [
+                "cfg-vless-out",
+                "cfg-trojan-out",
+                "cfg-hysteria2-out",
+                "cfg-tuic-out"
+            ],
+            "default": "cfg-hysteria2-out",
+            "interrupt_exist_connections": true
+        }
+    ],
+    "route": {
+        "rules": [
+            {
+                "protocol": "dns",
+                "outbound": "dns-out"
+            },
+            {
+                "ip_is_private": true,
+                "outbound": "direct-out"
+            },
+            {
+                "rule_set": [
+                    "cfg-ad-rule"
+                ],
+                "outbound": "block-out"
+            },
+            {
+                "clash_mode": "direct",
+                "outbound": "direct-out"
+            },
+            {
+                "clash_mode": "global",
+                "outbound": "select-out"
+            },
+            {
+                "rule_set": [
+                    "cfg-cnip-rule",
+                    "cfg-cnsite-rule"
+                ],
+                "outbound": "direct-out"
+            },
+            {
+                "protocol": [
+                    "quic"
+                ],
+                "outbound": "block-out"
+            }
+        ],
+        "rule_set": [
+            {
+                "type": "remote",
+                "tag": "cfg-cnip-rule",
+                "format": "binary",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo-lite/geoip/cn.srs",
+                "download_detour": "select-out"
+            },
+            {
+                "type": "remote",
+                "tag": "cfg-cnsite-rule",
+                "format": "binary",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo-lite/geosite/cn.srs",
+                "download_detour": "select-out"
+            },
+            {
+                "type": "remote",
+                "tag": "cfg-ad-rule",
+                "format": "binary",
+                "url": "https://github.com/TG-Twilight/AWAvenue-Ads-Rule/raw/main/Filters/AWAvenue-Ads-Rule-Singbox.srs",
+                "download_detour": "select-out"
+            }
+        ],
+        "auto_detect_interface": true,
+        "final": "select-out"
+    },
+    "experimental": {
+        "cache_file": {
+            "enabled": true
+        },
+        "clash_api": {
+            "external_controller": "127.0.0.1:9090",
+            "external_ui": "ui",
+            "external_ui_download_url": "https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip",
+            "external_ui_download_detour": "select-out",
+            "default_mode": "Rule"
+        }
+    }
+}
