@@ -103,7 +103,7 @@
             "tag": "cfg-vless-out",
             "routing_mark": 100,
             "server": "你的域名",
-            "server_port": 10000, // 端口
+            "server_port": 11111, // 端口
             "uuid": "服务端对应的uuid",
             "flow": "xtls-rprx-vision",
             "packet_encoding": "xudp",
@@ -118,7 +118,7 @@
             "tag": "cfg-trojan-out",
             "routing_mark": 100,
             "server": "你的域名",
-            "server_port": 20000, // 端口
+            "server_port": 22222, // 端口
             "password": "服务端对应的密码",
             "tls": {
                 "enabled": true,
@@ -131,7 +131,7 @@
             "tag": "cfg-hysteria2-out",
             "routing_mark": 100,
             "server": "服务端 ip",
-            "server_port": 30000, //端口
+            "server_port": 44444, //端口
             "password": "服务端对应的密码",
             "tls": {
                 "enabled": true,
@@ -145,7 +145,7 @@
             "tag": "cfg-tuic-out",
             "routing_mark": 100,
             "server": "服务端 ip",
-            "server_port": 40000, //端口
+            "server_port": 33333, //端口
             "password": "服务端对应密码",
             "uuid": "服务端对应uuid",
             "congestion_control": "cubic",
