@@ -1,0 +1,161 @@
+{
+    "log": {
+        "disabled": false,
+        "level": "error",
+        "timestamp": true
+    },
+    "inbounds": [
+        {
+            "type": "vless",
+            "tag": "vless-in",
+            "listen": "::",
+            "listen_port": 11111,
+            "sniff": true,
+            "sniff_override_destination": true,
+            "users": [
+                {
+                    "uuid": "你的uuid，可通过 sing-box generate uuid 生成",
+                    "flow": "xtls-rprx-vision"
+                }
+            ],
+            "tls": {
+                "enabled": true,
+                "certificate_path": "/usr/local/etc/singbox/server.crt",
+                "key_path": "/usr/local/etc/singbox/server.key"
+            }
+        },
+        {
+            "type": "trojan",
+            "tag": "trojan-in",
+            "listen": "::",
+            "listen_port": 22222,
+            "sniff": true,
+            "sniff_override_destination": true,
+            "users": [
+                {
+                    "password": "密码，自定义就行"
+                }
+            ],
+            "tls": {
+                "enabled": true,
+                "certificate_path": "/usr/local/etc/singbox/server.crt",
+                "key_path": "/usr/local/etc/singbox/server.key"
+            }
+        },
+        {
+            "type": "hysteria2",
+            "tag": "hy2-in",
+            "listen": "::",
+            "listen_port": 33333,
+            "users": [
+                {
+                    "password": "密码，自定义就行"
+                }
+            ],
+            "tls": {
+                "enabled": true,
+                "alpn": [
+                    "h3"
+                ],
+                "certificate_path": "/usr/local/etc/singbox/server.crt",
+                "key_path": "/usr/local/etc/singbox/server.key"
+            },
+            "masquerade": "bing.com"
+        },
+        {
+            "type": "tuic",
+            "tag": "tuic-in",
+            "listen": "::",
+            "listen_port": 44444,
+            "sniff": true,
+            "sniff_override_destination": true,
+            "users": [
+                {
+                    "name": "",
+                    "uuid": "",
+                    "password": ""
+                }
+            ],
+            "congestion_control": "cubic",
+            "auth_timeout": "3s",
+            "zero_rtt_handshake": false,
+            "heartbeat": "10s",
+            "tls": {
+                "enabled": true,
+                "alpn": [
+                    "h3",
+                    "spdy/3.1"
+                ],
+                "certificate_path": "/usr/local/etc/singbox/server.crt",
+                "key_path": "/usr/local/etc/singbox/server.key"
+            }
+        }      
+    ],
+    "outbounds": [
+        {
+            "type": "direct",
+            "tag": "direct"
+        },
+        {
+            "type": "block",
+            "tag": "block"
+        },
+        {
+            "type": "socks",
+            "tag": "warp_proxy",
+            "server": "127.0.0.1",
+            "server_port": 40000,
+            "version": "5"
+        }
+    ],
+    "route": {
+        "rule_set": [
+            {
+                "tag": "geosite-openai",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-openai.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-bing",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-bing.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-netflix",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-netflix.srs",
+                "download_detour": "direct"
+            }
+        ],
+        "rules": [
+            {
+                "rule_set": [
+                    "geosite-openai",
+                    "geosite-bing",
+                    "geosite-netflix"
+                ],
+                "outbound": "warp_proxy"
+            },
+            {
+                "protocol": [
+                    "bittorrent"
+                ],
+                "outbound": "block"
+            },
+            {
+                "inbound": [
+                    "vless-in",
+                    "trojan-in",
+                    "hy2-in",
+                    "tuic-in"
+                ],
+                "outbound": "direct"
+            }
+        ]
+    }
+}
