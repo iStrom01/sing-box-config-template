@@ -131,7 +131,7 @@
             "tag": "cfg-hysteria2-out",
             "routing_mark": 100,
             "server": "服务端 ip",
-            "server_port": 44444, //端口
+            "server_port": 33333, //端口
             "password": "服务端对应的密码",
             "tls": {
                 "enabled": true,
@@ -145,7 +145,7 @@
             "tag": "cfg-tuic-out",
             "routing_mark": 100,
             "server": "服务端 ip",
-            "server_port": 33333, //端口
+            "server_port": 44444, //端口
             "password": "服务端对应密码",
             "uuid": "服务端对应uuid",
             "congestion_control": "cubic",
