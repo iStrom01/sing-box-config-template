@@ -1,0 +1,105 @@
+{
+    "log": {
+        "disabled": false,
+        "level": "error",
+        "timestamp": true
+    },
+    "inbounds": [
+        {
+            "type": "vless",
+            "tag": "vless-reality-in",
+            "listen": "::",
+            "listen_port": ,
+            "sniff": true,
+            "sniff_override_destination": false,
+            "users": [
+              {
+                "name": "i",
+                "uuid": "",
+                "flow": "xtls-rprx-vision"
+              }
+            ],
+            "tls": {
+              "enabled": true,
+              "server_name": "",
+              "reality": {
+                "enabled": true,
+                "handshake": {
+                  "server": "",
+                  "server_port": 443
+                },
+                "private_key": "",
+                "short_id": [
+                  ""
+                ]
+              }
+            }
+          }
+    ],
+    "outbounds": [
+        {
+            "type": "direct",
+            "tag": "direct"
+        },
+        {
+            "type": "block",
+            "tag": "block"
+        },
+        {
+            "type": "socks",
+            "tag": "spec_proxy",
+            "server": "127.0.0.1",
+            "server_port": 40000,
+            "version": "5"
+        }
+    ],
+    "route": {
+        "rule_set": [
+            {
+                "tag": "geosite-openai",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-openai.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-bing",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-bing.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-netflix",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-netflix.srs",
+                "download_detour": "direct"
+            }
+        ],
+        "rules": [
+            {
+                "rule_set": [
+                    "geosite-openai",
+                    "geosite-bing",
+                    "geosite-netflix"
+                ],
+                "outbound": "spec_proxy"
+            },
+            {
+                "protocol": [
+                    "bittorrent"
+                ],
+                "outbound": "block"
+            },
+            {
+                "inbound": [
+                    "vless-reality-in"
+                ],
+                "outbound": "direct"
+            }
+        ]
+    }
+}
+
+
