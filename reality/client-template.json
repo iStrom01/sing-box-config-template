@@ -1,0 +1,237 @@
+{
+    "log": {
+        "disabled": false,
+        "level": "info",
+        "timestamp": true
+    },
+    "dns": {
+        "servers": [
+            {
+                "tag": "block-dns",
+                "address": "rcode://name_error"
+            },
+            {
+                "tag": "cfg-Ali-dns",
+                "address": "https://223.5.5.5/dns-query?",
+                "address_strategy": "ipv4_only",
+                "strategy": "ipv4_only",
+                "detour": "direct-out"
+            },
+            {
+                "tag": "cfg-google-dns",
+                "address": "https://dns.google/dns-query",
+                "address_resolver": "cfg-Ali-dns",
+                "address_strategy": "ipv4_only",
+                "strategy": "ipv4_only",
+                "detour": "select-out",
+                "client_subnet": "1.0.1.0"
+            }
+        ],
+        "rules": [
+            {
+                "ip_version": 4,
+                "outbound": "any",
+                "server": "cfg-Ali-dns"
+            },
+            {
+                "clash_mode": "Direct",
+                "server": "cfg-Ali-dns"
+            },
+            {
+                "clash_mode": "Global",
+                "server": "cfg-google-dns"
+            },
+            {
+                "rule_set": [
+                    "geosite-geolocation-cn"
+                ],
+                "server": "cfg-Ali-dns"
+            },
+            {
+                "type": "logical",
+                "mode": "and",
+                "rules": [
+                    {
+                        "rule_set": "geosite-geolocation-!cn",
+                        "invert": true
+                    },
+                    {
+                        "rule_set": "geoip-cn"
+                    }
+                ],
+                "server": "cfg-google-dns"
+            }
+        ],
+        "strategy": "ipv4_only",
+        "disable_cache": true,
+        "disable_expire": false,
+        "independent_cache": false,
+        "final": "cfg-google-dns"
+    },
+    "inbounds": [
+        {
+            "type": "tun",
+            "tag": "tun-in",
+            "interface_name": "singtun0",
+            "address": ["172.19.0.1/30"],
+            "mtu": 9000,
+            "gso": false,
+            "auto_route": true,
+            "strict_route": true,
+            "udp_timeout": "300s",
+            "stack": "system",
+            "sniff": true,
+            "sniff_override_destination": false
+        }
+    ],
+    "outbounds": [
+        {
+            "type": "direct",
+            "tag": "direct-out",
+            "routing_mark": 100
+        },
+        {
+            "type": "block",
+            "tag": "block-out"
+        },
+        {
+            "type": "dns",
+            "tag": "dns-out"
+        },
+        {
+            "type": "vless",
+            "tag": "reality-out",
+            "server": "",
+            "server_port": ,
+            "uuid": "",
+            "flow": "xtls-rprx-vision",
+            "packet_encoding": "xudp",
+            "tls": {
+                "enabled": true,
+                "server_name": "",
+                "insecure": false,
+                "utls": {
+                    "enabled": true,
+                    "fingerprint": "chrome"
+                },
+                "reality": {
+                    "enabled": true,
+                    "public_key": "",
+                    "short_id": ""
+                }
+            },
+            "domain_strategy": "ipv4_only"
+        },
+        {
+            "type": "selector",
+            "tag": "select-out",
+            "outbounds": [
+                "reality-out"
+            ],
+            "default": "reality-out",
+            "interrupt_exist_connections": true
+        }
+    ],
+    "route": {
+        "rules": [
+            {
+                "type": "logical",
+                "mode": "or",
+                "rules": [
+                    {
+                        "protocol": "dns"
+                    },
+                    {
+                        "port": 53
+                    }
+                ],
+                "outbound": "dns-out"
+            },
+            {
+                "ip_is_private": true,
+                "outbound": "direct-out"
+            },
+            {
+                "rule_set": [
+                    "cfg-ad-rule"
+                ],
+                "outbound": "block-out"
+            },
+            {
+                "clash_mode": "Direct",
+                "outbound": "direct-out"
+            },
+            {
+                "clash_mode": "Global",
+                "outbound": "select-out"
+            },
+            {
+                "type": "logical",
+                "mode": "or",
+                "rules": [
+                    {
+                        "port": 853
+                    },
+                    {
+                        "network": "udp",
+                        "port": 443
+                    },
+                    {
+                        "protocol": "stun"
+                    }
+                ],
+                "outbound": "block-out"
+            },
+            {
+                "rule_set": [
+                    "geoip-cn",
+                    "geosite-geolocation-cn"
+                ],
+                "outbound": "direct-out"
+            },
+            {
+                "protocol": [
+                    "quic"
+                ],
+                "outbound": "block-out"
+            }
+        ],
+        "rule_set": [
+            {
+                "type": "remote",
+                "tag": "geosite-geolocation-cn",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
+                "download_detour": "select-out"
+            },
+            {
+                "type": "remote",
+                "tag": "geosite-geolocation-!cn",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+                "download_detour": "select-out"
+            },
+            {
+                "type": "remote",
+                "tag": "geoip-cn",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+                "download_detour": "select-out"
+            },
+            {
+                "type": "remote",
+                "tag": "cfg-ad-rule",
+                "format": "binary",
+                "url": "https://github.com/TG-Twilight/AWAvenue-Ads-Rule/raw/main/Filters/AWAvenue-Ads-Rule-Singbox.srs",
+                "download_detour": "select-out"
+            }
+        ],
+        "auto_detect_interface": true,
+        "final": "select-out"
+    },
+    "experimental": {
+        "cache_file": {
+            "enabled": true
+        }
+    }
+}
