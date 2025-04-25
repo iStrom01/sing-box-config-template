@@ -10,8 +10,6 @@
             "tag": "vless-in",
             "listen": "::",
             "listen_port": 11111,
-            "sniff": true,
-            "sniff_override_destination": true,
             "users": [
                 {
                     "uuid": "你的uuid，可通过 sing-box generate uuid 生成",
@@ -29,8 +27,6 @@
             "tag": "trojan-in",
             "listen": "::",
             "listen_port": 22222,
-            "sniff": true,
-            "sniff_override_destination": true,
             "users": [
                 {
                     "password": "密码，自定义就行"
@@ -67,8 +63,6 @@
             "tag": "tuic-in",
             "listen": "::",
             "listen_port": 44444,
-            "sniff": true,
-            "sniff_override_destination": true,
             "users": [
                 {
                     "name": "",
@@ -95,10 +89,6 @@
         {
             "type": "direct",
             "tag": "direct"
-        },
-        {
-            "type": "block",
-            "tag": "block"
         },
         {
             "type": "socks",
@@ -145,7 +135,7 @@
                 "protocol": [
                     "bittorrent"
                 ],
-                "outbound": "block"
+                "action": "reject"
             },
             {
                 "inbound": [
