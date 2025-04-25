@@ -10,8 +10,6 @@
             "tag": "vless-reality-in",
             "listen": "::",
             "listen_port": ,
-            "sniff": true,
-            "sniff_override_destination": false,
             "users": [
               {
                 "name": "i",
@@ -40,10 +38,6 @@
         {
             "type": "direct",
             "tag": "direct"
-        },
-        {
-            "type": "block",
-            "tag": "block"
         },
         {
             "type": "socks",
@@ -79,6 +73,9 @@
         ],
         "rules": [
             {
+                "action": "sniff"
+            },
+            {
                 "rule_set": [
                     "geosite-openai",
                     "geosite-bing",
@@ -90,7 +87,7 @@
                 "protocol": [
                     "bittorrent"
                 ],
-                "outbound": "block"
+                "action": "reject"
             },
             {
                 "inbound": [
@@ -101,5 +98,3 @@
         ]
     }
 }
-
-
