@@ -77,8 +77,6 @@
             "listen": "::",
             "listen_port": 5330,
             "udp_timeout": "300s",
-            "sniff": true,
-            "sniff_override_destination": false,
             "set_system_proxy": false
         },
         {
@@ -92,9 +90,7 @@
             "gso": false,
             "auto_route": true,
             "udp_timeout": "300s",
-            "stack": "system",
-            "sniff": true,
-            "sniff_override_destination": false
+            "stack": "system"
         }
     ],
     "outbounds": [
@@ -102,14 +98,6 @@
             "type": "direct",
             "tag": "direct-out",
             "routing_mark": 100
-        },
-        {
-            "type": "block",
-            "tag": "block-out"
-        },
-        {
-            "type": "dns",
-            "tag": "dns-out"
         },
         {
             "type": "vless",
@@ -189,8 +177,11 @@
     "route": {
         "rules": [
             {
+                "action": "sniff"
+            },
+            {
                 "inbound": "dns-in",
-                "outbound": "dns-out"
+                "action": "hijack-dns"
             },
             {
                 "type": "logical",
@@ -203,7 +194,7 @@
                         "port": 53
                     }
                 ],
-                "outbound": "dns-out"
+                "action": "hijack-dns"
             },
             {
                 "ip_is_private": true,
@@ -213,7 +204,7 @@
                 "rule_set": [
                     "cfg-ad-rule"
                 ],
-                "outbound": "block-out"
+                "action": "reject"
             },
             {
                 "clash_mode": "Direct",
@@ -238,7 +229,7 @@
                         "protocol": "stun"
                     }
                 ],
-                "outbound": "block-out"
+                "action": "reject"
             },
             {
                 "rule_set": [
@@ -257,7 +248,7 @@
                 "protocol": [
                     "quic"
                 ],
-                "outbound": "block-out"
+                "action": "reject"
             }
         ],
         "rule_set": [
