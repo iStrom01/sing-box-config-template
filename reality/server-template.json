@@ -9,26 +9,26 @@
             "type": "vless",
             "tag": "vless-reality-in",
             "listen": "::",
-            "listen_port": ,
+            "listen_port": 27117,
             "users": [
               {
                 "name": "i",
-                "uuid": "",
+                "uuid": "f4f414f4-b337-4ba8-a693-879fda4f032c",
                 "flow": "xtls-rprx-vision"
               }
             ],
             "tls": {
               "enabled": true,
-              "server_name": "",
+              "server_name": "www.kciconst.com",
               "reality": {
                 "enabled": true,
                 "handshake": {
-                  "server": "",
+                  "server": "www.kciconst.com",
                   "server_port": 443
                 },
-                "private_key": "",
+                "private_key": "ECVCVMTZFRiP96UYHcTNxgBP47o5zicTDK5vN7HGqWE",
                 "short_id": [
-                  ""
+                  "0a1f33ed31236a32"
                 ]
               }
             }
