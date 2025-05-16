@@ -9,26 +9,26 @@
             "type": "vless",
             "tag": "vless-reality-in",
             "listen": "::",
-            "listen_port": ,
+            "listen_port": 27117,
             "users": [
               {
                 "name": "i",
-                "uuid": "",
+                "uuid": "eff803f0-5b3a-445e-a6be-fd5cbdc77b3f",
                 "flow": "xtls-rprx-vision"
               }
             ],
             "tls": {
               "enabled": true,
-              "server_name": "",
+              "server_name": "www.ichandran.com",
               "reality": {
                 "enabled": true,
                 "handshake": {
-                  "server": "",
+                  "server": "www.ichandran.com",
                   "server_port": 443
                 },
-                "private_key": "",
+                "private_key": "aLGMfsdgSjJFzKnVu2CV4p6Jl9sbQXEHvtgv2M6AO3c",
                 "short_id": [
-                  ""
+                  "4e0d77b6df3b5a88"
                 ]
               }
             }
