@@ -95,14 +95,14 @@
         {
             "type": "vless",
             "tag": "reality-out",
-            "server": "",
-            "server_port": ,
-            "uuid": "",
+            "server": "141.147.146.40",
+            "server_port": 27117,
+            "uuid": "eff803f0-5b3a-445e-a6be-fd5cbdc77b3f",
             "flow": "xtls-rprx-vision",
             "packet_encoding": "xudp",
             "tls": {
                 "enabled": true,
-                "server_name": "",
+                "server_name": "www.ichandran.com",
                 "insecure": false,
                 "utls": {
                     "enabled": true,
@@ -110,8 +110,8 @@
                 },
                 "reality": {
                     "enabled": true,
-                    "public_key": "",
-                    "short_id": ""
+                    "public_key": "JB63CsDjZd7bRWtsLZ5GiY-xICLcDPtXJMipoLQMqT0",
+                    "short_id": "4e0d77b6df3b5a88"
                 }
             },
             "domain_strategy": "ipv4_only"
