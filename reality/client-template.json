@@ -89,10 +89,6 @@
             "routing_mark": 100
         },
         {
-            "type": "dns",
-            "tag": "dns-out"
-        },
-        {
             "type": "vless",
             "tag": "reality-out",
             "server": "",
